@@ -1,12 +1,7 @@
-# from turtle import onclick
-# from matplotlib.ticker import MaxNLocator
-import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
 import streamlit as st
+import pandas as pd
+import numpy as np
 from PIL import Image
-import os
-import glob
 from datetime import datetime
 
 st.set_page_config(
@@ -24,9 +19,6 @@ st.set_page_config(
 uploaded_files = st.file_uploader("Choose a jpg file", accept_multiple_files=True)
 for uploaded_file in uploaded_files:
      bytes_data = uploaded_file.read()
-    #  st.write("filename:", uploaded_file.name)
-    #  st.image(uploaded_file)
-     st.write(uploaded_file)
 images_list=uploaded_files
 
 def create_csv_name(csv_filename:str=None)->str:
@@ -55,7 +47,7 @@ def yes_button():
         row={"Filename":images_list[st.session_state.img_idx].name,'Sorted':"good",'Index':st.session_state.img_idx}
         st.session_state.df=pd.concat([st.session_state.df,pd.DataFrame.from_records([row])],ignore_index=True)
         st.session_state.img_idx += 1
-    elif st.session_state.img_idx == len(images_list)-1:
+    if st.session_state.img_idx == len(images_list)-1:
         row={"Filename":images_list[st.session_state.img_idx].name,'Sorted':"good",'Index':st.session_state.img_idx}
         st.session_state.df=pd.concat([st.session_state.df,pd.DataFrame.from_records([row])],ignore_index=True)
         st.session_state.img_idx += 1
@@ -63,6 +55,7 @@ def yes_button():
         st.balloons()
     else:
         st.warning(f'No more images to sort { st.session_state.img_idx} /{ len(images_list)} ')
+
 
 def no_button():
     if -1 < st.session_state.img_idx < len(images_list)-1 :
@@ -78,6 +71,7 @@ def no_button():
     else:
         st.warning(f'No more images to sort { st.session_state.img_idx}/{ len(images_list)}')
 
+
 def undo_button():
     if st.session_state.img_idx >0:
         st.session_state.img_idx -= 1
@@ -87,7 +81,7 @@ def undo_button():
     else:
         st.warning('Cannot Undo')
 
-# images_list = glob.glob1("./images", "*jpg")
+
 if images_list==[]:
     image= Image.open("./assets/new_loading_sniffer.jpg")
 else:
@@ -98,10 +92,8 @@ else:
 
 st.title("Sniffer🐕")
 st.image("./assets/sniffer.jpg")
-st.write(len(images_list))
-st.write(len(images_list)-1)
-st.write(st.session_state.img_idx)
-num_images=(len(images_list)) if (len(images_list)-1)>0 else 1
+# Sets num_image=1 if images_list is empty
+num_images=(len(images_list)) if (len(images_list))>0 else 1
 my_bar = st.progress((st.session_state.img_idx)/num_images)
 
 
@@ -112,11 +104,13 @@ with col1:
     st.button(label="Undo",key="undo_button",on_click=undo_button)
     
 with col2:
+    # Display done.jpg when all images are sorted 
     if st.session_state.img_idx>=len(images_list):
         image = Image.open("./assets/done.jpg")
         st.image(image,width=300)
     else:
-        caption = 'loading.jpg' if images_list==[] else f'#{st.session_state.img_idx} {images_list[st.session_state.img_idx].name}'
+        # caption is none when images_list is empty otherwise it is the image name 
+        caption = '' if images_list==[] else f'#{st.session_state.img_idx} {images_list[st.session_state.img_idx].name}'
         st.image(image, caption=caption,width=300)
     
 with col4:
