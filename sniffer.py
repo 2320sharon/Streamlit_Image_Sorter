@@ -1,5 +1,5 @@
 # from turtle import onclick
-from matplotlib.ticker import MaxNLocator
+# from matplotlib.ticker import MaxNLocator
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -8,6 +8,18 @@ from PIL import Image
 import os
 import glob
 from datetime import datetime
+
+st.set_page_config(
+     page_title="Sniffer",
+     page_icon="🐕",
+     layout="centered",
+     initial_sidebar_state="collapsed",
+     menu_items={
+         'Get Help': None,
+         'Report a bug': None,
+         'About': "# Sniffer. Sort your *extremely* cool images!"
+     }
+ )
 
 def create_csv_name(csv_filename:str=None)->str:
     today = datetime.now()
@@ -64,7 +76,7 @@ def undo_button():
 images_list = glob.glob1("./images", "*jpg")
 image = Image.open("./images"+os.sep+images_list[st.session_state.img_idx])
 
-st.title("Sniffer")
+st.title("Sniffer🐕")
 st.image("./assets/sniffer.jpg")
 my_bar = st.progress(st.session_state.img_idx/(len(images_list)-1))
 
@@ -80,12 +92,12 @@ with col2:
     
 with col4:
     st.download_button(
-     label="Download data as CSV",
+     label="Download data as CSV 💻",
      data=create_csv(),
      file_name= create_csv_name(),
      mime='text/csv',
  )
 
-
-st.dataframe(st.session_state.df)
-st.bar_chart(st.session_state.df['Sorted'].value_counts())
+with st.expander("See Dataset Details 📈"):
+    st.dataframe(st.session_state.df)
+    st.bar_chart(st.session_state.df['Sorted'].value_counts())
