@@ -1,4 +1,5 @@
-from turtle import onclick
+# from turtle import onclick
+from matplotlib.ticker import MaxNLocator
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,7 +8,6 @@ from PIL import Image
 import os
 import glob
 from datetime import datetime
-import csv
 
 def create_csv_name(csv_filename:str=None)->str:
     today = datetime.now()
@@ -22,8 +22,6 @@ def create_csv_name(csv_filename:str=None)->str:
 # Initialize Sniffer's states
 if 'img_idx' not in st.session_state:
     st.session_state.img_idx=0
-if 'csv_file' not in st.session_state:
-    st.session_state.csv_file=create_csv_name()
 if 'df' not in st.session_state:
     st.session_state.df=pd.DataFrame(columns=['Filename','Sorted','Index'])
 
@@ -36,9 +34,6 @@ def yes_button():
     if -1 < st.session_state.img_idx < len(images_list)-1:
         row={"Filename":images_list[st.session_state.img_idx],'Sorted':"good",'Index':st.session_state.img_idx}
         st.session_state.df=pd.concat([st.session_state.df,pd.DataFrame.from_records([row])],ignore_index=True)
-        with open(st.session_state.csv_file, 'a', newline='') as outcsv:
-            writer = csv.writer(outcsv)
-            writer.writerow([images_list[st.session_state.img_idx], "good",  st.session_state.img_idx])
         st.session_state.img_idx += 1
     elif st.session_state.img_idx == len(images_list)-1:
         st.success('All images have been sorted!')
@@ -50,9 +45,6 @@ def no_button():
     if -1 < st.session_state.img_idx < len(images_list)-1:
         row={"Filename":images_list[st.session_state.img_idx],'Sorted':"bad",'Index':st.session_state.img_idx}
         st.session_state.df=pd.concat([st.session_state.df,pd.DataFrame.from_records([row])],ignore_index=True)
-        with open(st.session_state.csv_file, 'a', newline='') as outcsv:
-            writer = csv.writer(outcsv)
-            writer.writerow([images_list[st.session_state.img_idx], "bad",  st.session_state.img_idx])
         st.session_state.img_idx += 1
     elif st.session_state.img_idx == len(images_list)-1:
         st.success('All images have been sorted!')
@@ -73,7 +65,7 @@ images_list = glob.glob1("./images", "*jpg")
 image = Image.open("./images"+os.sep+images_list[st.session_state.img_idx])
 
 st.title("Sniffer")
-st.write(images_list[st.session_state.img_idx])
+st.image("./assets/sniffer.jpg")
 my_bar = st.progress(st.session_state.img_idx/(len(images_list)-1))
 
 
@@ -84,7 +76,7 @@ with col1:
     st.button(label="Undo",key="undo_button",on_click=undo_button)
     
 with col2:
-    st.image(image, caption=f'Image #{st.session_state.img_idx}',width=300)
+    st.image(image, caption=f'{images_list[st.session_state.img_idx]}',width=300)
     
 with col4:
     st.download_button(
@@ -96,9 +88,4 @@ with col4:
 
 
 st.dataframe(st.session_state.df)
-
-
-
-
-# Upload images button
-# HERE
+st.bar_chart(st.session_state.df['Sorted'].value_counts())
