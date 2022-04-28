@@ -9,27 +9,28 @@ import glob
 from datetime import datetime
 import csv
 
-# Initialize Sniffer's states
-if 'img_idx' not in st.session_state:
-    st.session_state.img_idx=0
-if 'csv_file' not in st.session_state:
-    st.session_state.csv_file=None
-if 'df' not in st.session_state:
-    st.session_state.df=pd.DataFrame(columns=['Filename','Sorted','Index'])
-
-    
-def create_csv(csv_filename=None):
+def create_csv_name(csv_filename:str=None)->str:
     today = datetime.now()
     if csv_filename is not None:
         if not csv_filename.endswith(".csv"):
             csv_filename += ".csv"
-        csv_path = csv_filename
     elif csv_filename is None:
         d1 = today.strftime("%d_%m_%Y_hr_%H_%M")
-        filename = f"Sniffer_Output_" + d1 + ".csv"
-        csv_path = filename
-    st.session_state.df.to_csv(csv_filename)
-    return csv_path
+        csv_filename = f"Sniffer_Output_" + d1 + ".csv"
+    return csv_filename
+
+# Initialize Sniffer's states
+if 'img_idx' not in st.session_state:
+    st.session_state.img_idx=0
+if 'csv_file' not in st.session_state:
+    st.session_state.csv_file=create_csv_name()
+if 'df' not in st.session_state:
+    st.session_state.df=pd.DataFrame(columns=['Filename','Sorted','Index'])
+
+def create_csv():
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    st.session_state.df.to_csv().encode('utf-8')
+    return st.session_state.df.to_csv().encode('utf-8')
 
 def yes_button():
     if -1 < st.session_state.img_idx < len(images_list)-1:
@@ -72,12 +73,11 @@ images_list = glob.glob1("./images", "*jpg")
 image = Image.open("./images"+os.sep+images_list[st.session_state.img_idx])
 
 st.title("Sniffer")
-st.write( st.session_state.img_idx)
-st.write(st.session_state.df)
+st.write(images_list[st.session_state.img_idx])
 my_bar = st.progress(st.session_state.img_idx/(len(images_list)-1))
 
 
-col1,col2,col3=st.columns(3)
+col1,col2,col3,col4=st.columns(4)
 with col1:
     st.button(label="Yes",key="yes_button",on_click=yes_button)
     st.button(label="No",key="no_button",on_click=no_button)
@@ -85,25 +85,20 @@ with col1:
     
 with col2:
     st.image(image, caption=f'Image #{st.session_state.img_idx}',width=300)
+    
+with col4:
+    st.download_button(
+     label="Download data as CSV",
+     data=create_csv(),
+     file_name= create_csv_name(),
+     mime='text/csv',
+ )
+
 
 st.dataframe(st.session_state.df)
 
 
 
-# Button to download the CSV file generated
-# @st.cache
-# def convert_df(df):
-#      # IMPORTANT: Cache the conversion to prevent computation on every rerun
-#      return df.to_csv().encode('utf-8')
-
-# csv = convert_df(my_large_df)
-
-# st.download_button(
-#      label="Download data as CSV",
-#      data=csv,
-#      file_name='large_df.csv',
-#      mime='text/csv',
-#  )
 
 # Upload images button
 # HERE
