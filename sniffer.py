@@ -63,7 +63,7 @@ def no_button():
         st.session_state.df=pd.concat([st.session_state.df,pd.DataFrame.from_records([row])],ignore_index=True)
         st.session_state.img_idx += 1
     elif st.session_state.img_idx == len(images_list)-1:
-        row={"Filename":images_list[st.session_state.img_idx].name,'Sorted':"good",'Index':st.session_state.img_idx}
+        row={"Filename":images_list[st.session_state.img_idx].name,'Sorted':"bad",'Index':st.session_state.img_idx}
         st.session_state.df=pd.concat([st.session_state.df,pd.DataFrame.from_records([row])],ignore_index=True)
         st.session_state.img_idx += 1
         st.success('All images have been sorted!')
