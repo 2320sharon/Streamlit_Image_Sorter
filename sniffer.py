@@ -43,14 +43,11 @@ def create_csv():
     return st.session_state.df.to_csv().encode('utf-8')
 
 def yes_button():
-    if -1 < st.session_state.img_idx < (len(images_list)-1)   :
+    if -1 < st.session_state.img_idx <= (len(images_list)-1)   :
         row={"Filename":images_list[st.session_state.img_idx].name,'Sorted':"good",'Index':st.session_state.img_idx}
         st.session_state.df=pd.concat([st.session_state.df,pd.DataFrame.from_records([row])],ignore_index=True)
         st.session_state.img_idx += 1
-    if st.session_state.img_idx == len(images_list)-1:
-        row={"Filename":images_list[st.session_state.img_idx].name,'Sorted':"good",'Index':st.session_state.img_idx}
-        st.session_state.df=pd.concat([st.session_state.df,pd.DataFrame.from_records([row])],ignore_index=True)
-        st.session_state.img_idx += 1
+    elif st.session_state.img_idx ==(len(images_list)):
         st.success('All images have been sorted!')
         st.balloons()
     else:
@@ -58,14 +55,11 @@ def yes_button():
 
 
 def no_button():
-    if -1 < st.session_state.img_idx < len(images_list)-1 :
+    if -1 < st.session_state.img_idx <= (len(images_list)-1) :
         row={"Filename":images_list[st.session_state.img_idx].name,'Sorted':"bad",'Index':st.session_state.img_idx}
         st.session_state.df=pd.concat([st.session_state.df,pd.DataFrame.from_records([row])],ignore_index=True)
         st.session_state.img_idx += 1
-    elif st.session_state.img_idx == len(images_list)-1:
-        row={"Filename":images_list[st.session_state.img_idx].name,'Sorted':"bad",'Index':st.session_state.img_idx}
-        st.session_state.df=pd.concat([st.session_state.df,pd.DataFrame.from_records([row])],ignore_index=True)
-        st.session_state.img_idx += 1
+    elif st.session_state.img_idx == (len(images_list)):
         st.success('All images have been sorted!')
         st.balloons()
     else:
@@ -75,7 +69,7 @@ def no_button():
 def undo_button():
     if st.session_state.img_idx >0:
         st.session_state.img_idx -= 1
-        if images_list != []:
+        if images_list != [] and st.session_state.img_idx <= (len(images_list)-1) :
             drop_filename=images_list[st.session_state.img_idx].name
             index=st.session_state.df.loc[st.session_state.df['Filename'] == drop_filename].index.values
             st.session_state.df.drop(index, axis=0, inplace=True)
@@ -93,9 +87,14 @@ else:
 
 st.title("Sniffer🐕")
 st.image("./assets/sniffer.jpg")
+
 # Sets num_image=1 if images_list is empty
 num_images=(len(images_list)) if (len(images_list))>0 else 1
-my_bar = st.progress((st.session_state.img_idx)/num_images)
+
+try:
+    my_bar = st.progress((st.session_state.img_idx)/num_images)
+except st.StreamlitAPIException:
+    my_bar = st.progress(0)
 
 
 col1,col2,col3,col4=st.columns(4)
@@ -110,7 +109,7 @@ with col2:
         image = Image.open("./assets/done.jpg")
         st.image(image,width=300)
     else:
-        # caption is none when images_list is empty otherwise it is the image name 
+        # caption is "" when images_list is empty otherwise its image name 
         caption = '' if images_list==[] else f'#{st.session_state.img_idx} {images_list[st.session_state.img_idx].name}'
         st.image(image, caption=caption,width=300)
     
