@@ -21,6 +21,7 @@ for uploaded_file in uploaded_files:
      bytes_data = uploaded_file.read()
 images_list=uploaded_files
 
+
 def create_csv_name(csv_filename:str=None)->str:
     today = datetime.now()
     if csv_filename is not None:
@@ -36,6 +37,10 @@ if 'img_idx' not in st.session_state:
     st.session_state.img_idx=0
 if 'df' not in st.session_state:
     st.session_state.df=pd.DataFrame(columns=['Filename','Sorted','Index'])
+
+# img_idx will always be inside images_list
+if st.session_state.img_idx > (len(images_list)):
+    st.session_state.img_idx = (len(images_list)-1) if (len(images_list)-1)>0 else 0
 
 def create_csv():
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
