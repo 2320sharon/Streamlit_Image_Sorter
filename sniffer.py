@@ -75,9 +75,10 @@ def no_button():
 def undo_button():
     if st.session_state.img_idx >0:
         st.session_state.img_idx -= 1
-        drop_filename=images_list[st.session_state.img_idx].name
-        index=st.session_state.df.loc[st.session_state.df['Filename'] == drop_filename].index.values
-        st.session_state.df.drop(index, axis=0, inplace=True)
+        if images_list != []:
+            drop_filename=images_list[st.session_state.img_idx].name
+            index=st.session_state.df.loc[st.session_state.df['Filename'] == drop_filename].index.values
+            st.session_state.df.drop(index, axis=0, inplace=True)
     else:
         st.warning('Cannot Undo')
 
