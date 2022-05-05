@@ -1,6 +1,6 @@
 # Streamlit Customizable Image Sorter 📸
 Do you want to apply your own custom functions to your imagery and preview what they look like? 
-Well this simple streamlit tool lets you create your own function to modify your imagery, see if the images look like what you expected with preview mode, then download them.
+Well this simple streamlit tool lets you create your own function to modify your imagery, preview what they would look like, then download the modified images.
 ![image_sorter_github_v1](https://user-images.githubusercontent.com/61564689/167033099-14d10ec5-7fb2-490d-b471-b14f2ebffbee.gif)
 
 
