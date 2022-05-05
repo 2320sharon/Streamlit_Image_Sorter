@@ -79,13 +79,8 @@ with col2:
 
 # EXAMPLE FUNCTIONS THAT CAN BE APPLIED  TO IMAGES
 # --------------------------------------------------------
-# def crop_img(image:"PIL.Image"):
-#     image_copy=image.copy()
-#     (left, upper, right, lower) = (20, 20, 100, 100)
-#     im_crop = image_copy.crop((left, upper, right, lower))
-#     return im_crop
-
-
+# 1. Replace this function with the function you want to apply to your imagery.
+# 2. Make sure to replace the 
 def enhance_img(image:"PIL.Image"):
     image_copy=image.copy()
     enhancer = ImageEnhance.Contrast(image_copy)
@@ -99,7 +94,7 @@ def create_zip():
     pil_imgs=[]
     for result in images_list:
        pil_imgs.append(enhance_img(Image.open(result)))
-    # Buffer to hold all the images as bytes buffer
+    # BytesIO Buffer holds all images as bytes this later  be used to create zip file
     zip_buffer = BytesIO()
     with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
         # For each image save it to its own bytes buffer then save it to zipfile's buffer
@@ -111,16 +106,16 @@ def create_zip():
     return zip_buffer
 
 def create_img_download():
-    """create_img_download returns a BytesIO buffer containing the data for the current image
-     after applying the function (in this example enhance_img()) to it
+    """create_img_download returns a BytesIO buffer with the data for the image at the current img_index
+     after applying the custom function (in this example enhance_img())
 
     Example #1:
-    enhance_img() is the function applied to the current image. It returns a Pil.Image that has its contrast increased
-    This function is applied to the image before it is saved to the BytesIO buffer,so that the download image has
+    enhance_img() is the function applied to the current image. It returns a Pil.Image.Image with contrast increased.
+    This function is applied to the image before it is saved to the BytesIO buffer,so that the downloaded image has
     the higher contrast applied to it.
 
     Returns:
-        BytesIO: buffer containing the current's image data
+        BytesIO: buffer containing the modified image data
     """
     img_index=st.session_state.img_idx
     # download the last image if the user has already seen it
@@ -130,14 +125,18 @@ def create_img_download():
     if 0<=img_index<(len(images_list)) and images_list !=  []:
         img=images_list[img_index]
         img = Image.open(img)
-        # PUT YOUR FUNCTION HERE
+        # Modify the following line to use your custom function. Ensure your function returns PIL.Image.Image
         result_img=enhance_img(img)
+        st.write(type(result_img))
         # Shows a mini preview of the image to download
         if preview_selection == 'Yes':
             st.image(result_img)
-        buf=BytesIO()
-        result_img.save(buf,format="JPEG")
-        byte_im=buf.getvalue()
+        buffer=BytesIO()
+        # Save the modified image to the buffer as a JPEG file
+        # Modify the following line if you want to save in another format (ex. PNG)
+        result_img.save(buffer,format="JPEG")
+        # Get the download ready bytes from the buffer 
+        byte_im=buffer.getvalue()
         return byte_im
         
 
