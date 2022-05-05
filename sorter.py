@@ -79,9 +79,9 @@ with col2:
 
 # EXAMPLE FUNCTIONS THAT CAN BE APPLIED  TO IMAGES
 # --------------------------------------------------------
-# 1. Replace this function with the function you want to apply to your imagery.
-# 2. Make sure to replace the 
-def enhance_img(image:"PIL.Image"):
+# 1. Replace this function with your custom function you want to apply to your imagery.
+# 2. Ensure it returns PIL.Image.Image
+def enhance_img(image:"PIL.JpegImagePlugin.JpegImageFile")->'PIL.Image.Image':
     image_copy=image.copy()
     enhancer = ImageEnhance.Contrast(image_copy)
     im_output = enhancer.enhance(3)
@@ -124,10 +124,10 @@ def create_img_download():
     # Make sure the images list is not empty and the index is valid
     if 0<=img_index<(len(images_list)) and images_list !=  []:
         img=images_list[img_index]
+        # Open the image before passing to the your custom function
         img = Image.open(img)
         # Modify the following line to use your custom function. Ensure your function returns PIL.Image.Image
         result_img=enhance_img(img)
-        st.write(type(result_img))
         # Shows a mini preview of the image to download
         if preview_selection == 'Yes':
             st.image(result_img)
