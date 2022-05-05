@@ -89,6 +89,18 @@ def enhance_img(image:"PIL.JpegImagePlugin.JpegImageFile")->'PIL.Image.Image':
 # --------------------------------------------------------
 
 def create_zip():
+    """create_zip returns a ready-to-download zip file containing all the images modified by the custom function.
+    
+    The custom function is first applied to all the images then all the images are added to the zip file buffer.
+    Example #1
+    enhance_img() is the function applied to all images. It returns a Pil.Image.Image with contrast increased.
+    This function is applied to each image before it is saved to its own buffer, then saved to the zipfile's buffer 
+    which can then be downloaded by the user. 
+    TLDR: It create a zipfile bytes buffer containing all the modified images ready to download
+   
+    Returns:
+        _io.BytesIO: buffer for the zip file containing all the modified images data
+    """
     names=list(map(lambda n:n.name,images_list))
     #Add your function to apply to all the images.Replace enhance_img with your own function
     pil_imgs=[]
@@ -103,19 +115,21 @@ def create_zip():
             pil_imgs[cnt].save(img_buffer,format="JPEG")
             zip_file.writestr(file_name, img_buffer.getvalue())
     zip_buffer.seek(0)
+    st.write(type(zip_buffer))
     return zip_buffer
 
 def create_img_download():
-    """create_img_download returns a BytesIO buffer with the data for the image at the current img_index
-     after applying the custom function (in this example enhance_img())
+    """create_img_download returns a ready-to-download modified image created by applying the custom function
+     (in this example enhance_img())
 
     Example #1:
     enhance_img() is the function applied to the current image. It returns a Pil.Image.Image with contrast increased.
     This function is applied to the image before it is saved to the BytesIO buffer,so that the downloaded image has
     the higher contrast applied to it.
+    TLDR: It create a bytes buffer containing the modified image ready to download
 
     Returns:
-        BytesIO: buffer containing the modified image data
+        bytes: buffer containing the modified image data
     """
     img_index=st.session_state.img_idx
     # download the last image if the user has already seen it
@@ -137,6 +151,7 @@ def create_img_download():
         result_img.save(buffer,format="JPEG")
         # Get the download ready bytes from the buffer 
         byte_im=buffer.getvalue()
+        st.write(type(byte_im))
         return byte_im
         
 
