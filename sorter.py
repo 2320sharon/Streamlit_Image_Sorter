@@ -45,8 +45,9 @@ def back_button():
 
 
 if images_list == []:
-    image = Image.open("./assets/new_loading_sniffer.jpg")
+    image = Image.open("./assets/upload.jpg")
 else:
+    st.write(st.session_state.img_idx)
     if st.session_state.img_idx >= len(images_list):
         image = Image.open("./assets/done.jpg")
     else:
@@ -69,8 +70,11 @@ with col1:
     st.button(label="Back", key="back_button", on_click=back_button)
 
 with col2:
+    if len(images_list)<=0:
+        image = Image.open("./assets/upload.jpg")
+        st.image(image, width=300)
     # Display done.jpg when all images are sorted
-    if st.session_state.img_idx >= len(images_list):
+    elif st.session_state.img_idx >= len(images_list):
         image = Image.open("./assets/done.jpg")
         st.image(image, width=300)
     else:
